@@ -1,100 +1,84 @@
 package com.xstudio.xbrowser.view;
 
-
 import android.util.AttributeSet;
 import android.widget.Button;
 import android.content.Context;
+import android.text.Editable;
 import android.view.Gravity;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import com.xstudio.xbrowser.R;
 import android.widget.RelativeLayout;
+import android.text.TextWatcher;
 import android.view.View;
 
 import static android.widget.RelativeLayout.LayoutParams.*;
-import android.view.*;
 
-public class MainToolbar extends RelativeLayout {
+public class MainToolbar extends RelativeLayout implements View.OnClickListener {
     
-    public static final int MORE_BUTTON_ID = 1;
-    public static final int SELECT_WINDOW_BUTTON_ID = 2;
-    
-    private ImageButton moreButton;
-    private Button selectWindowButton;
-    private UrlInputBox urlInputBox;
-    
-    public MainToolbar(Context context) {
-        super(context);
-        init();
-    }
+    private final ImageButton moreButton;
+    private final Button selectWindowButton;
+    private final UrlInputBox urlInputBox;
     
     public MainToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
-    }
-    
-    public void setOnImeActionGoListener(UrlInputEditText.OnImeActionGoListener listener) {
-        urlInputBox.urlInput.setOnImeActionGoListener(listener);
-    }
-    
-    private void init() {
         setClipChildren(false);
         setClipToPadding(false);
         setPadding(10, 5, 10, 5);
         setFocusable(true);
         setFocusableInTouchMode(true);
-        
-        initMoreButton();
-        initSelectWindowButton();
-        initUrlInputBox();
-    }
-    
-    private void initMoreButton() {
+
         moreButton = new ImageButton(getContext());
-        moreButton.setImageResource(R.drawable.ic_more_vert_black);
-        moreButton.setBackgroundResource(android.R.color.transparent);
+        moreButton.setId(moreButton.generateViewId());
+        moreButton.setOnClickListener(this);
+        moreButton.setPadding(4, 4, 4, 4);
         moreButton.setScaleType(ImageButton.ScaleType.CENTER_INSIDE);
-        moreButton.setId(MORE_BUTTON_ID);
-        moreButton.setPadding(5, moreButton.getPaddingTop(), 5, moreButton.getPaddingBottom());
-        LayoutParams params = new LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
-        params.addRule(CENTER_VERTICAL);
-        params.addRule(ALIGN_PARENT_RIGHT, TRUE);
-        addView(moreButton, params);
-    }
-    
-    private void initSelectWindowButton() {
+        moreButton.setImageResource(R.drawable.ic_more_vert_black);
+        moreButton.setBackgroundResource(R.drawable.gradient_touch_effect);
+        LayoutParams params1 = new LayoutParams(45, 45);
+        params1.addRule(CENTER_VERTICAL);
+        params1.addRule(ALIGN_PARENT_RIGHT, TRUE);
+        addView(moreButton, params1);
+
         selectWindowButton = new Button(getContext());
-        selectWindowButton.setText("0");
+        selectWindowButton.setId(selectWindowButton.generateViewId());
+        selectWindowButton.setOnClickListener(this);
+        selectWindowButton.setText("1");
+        selectWindowButton.setPadding(2, 2, 2, 2);
+        selectWindowButton.setGravity(Gravity.CENTER);
         selectWindowButton.setBackgroundResource(R.drawable.taper_border);
-        selectWindowButton.setId(SELECT_WINDOW_BUTTON_ID);
-        LayoutParams params = new LayoutParams(25, 25);
-        params.leftMargin = 25;
-        params.rightMargin = 25;
-        params.addRule(CENTER_VERTICAL);
-        params.addRule(LEFT_OF, MORE_BUTTON_ID);
-        addView(selectWindowButton, params);
-    }
-    
-    private void initUrlInputBox() {
+        LayoutParams params2 = new LayoutParams(30, 30);
+        params2.leftMargin = 25;
+        params2.rightMargin = 25;
+        params2.addRule(CENTER_VERTICAL);
+        params2.addRule(LEFT_OF, moreButton.getId());
+        addView(selectWindowButton, params2);
+
         urlInputBox = new UrlInputBox(getContext());
-        LayoutParams params = new LayoutParams(MATCH_PARENT, WRAP_CONTENT);
-        params.addRule(CENTER_VERTICAL);
-        params.addRule(LEFT_OF, SELECT_WINDOW_BUTTON_ID);
-        params.addRule(ALIGN_PARENT_LEFT, TRUE);
-        addView(urlInputBox, params);
-        
+        LayoutParams params3 = new LayoutParams(MATCH_PARENT, WRAP_CONTENT);
+        params3.addRule(CENTER_VERTICAL);
+        params3.addRule(LEFT_OF, selectWindowButton.getId());
+        params3.addRule(ALIGN_PARENT_LEFT, TRUE);
+        addView(urlInputBox, params3);
+
         urlInputBox.urlInput.setDropDownAnchor(getId());
         urlInputBox.urlInput.setDropDownVerticalOffset(0);
-        urlInputBox.urlInput.setOnFocusChangeListener(new OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View view, boolean focused) {
-                    if (focused) {
-                        expandUrlInputBox(true);
-                    } else {
-                        expandUrlInputBox(false);
-                    }
-                }
-            });
+    }
+    
+    public void setOnImeActionGoListener(UrlInputEditText.OnImeActionGoListener listener) {
+        urlInputBox.urlInput.setOnImeActionGoListener(listener);
+    }
+
+    @Override
+    public void onClick(View view) {
+        final int viewId = view.getId();
+        if (viewId == urlInputBox.actionButton.getId()) {
+            if (urlInputBox.urlInput.getText().length() > 0) {
+                urlInputBox.urlInput.getText().clear();
+            } else {
+                
+            }
+        }
     }
     
     private void expandUrlInputBox(boolean expand) {
@@ -110,25 +94,94 @@ public class MainToolbar extends RelativeLayout {
         }
     }
     
-    class UrlInputBox extends LinearLayout {
+    class UrlInputBox extends RelativeLayout {
         
-        UrlInputEditText urlInput;
+        final UrlInputEditText urlInput;
+        final ImageButton faviconButton;
+        final ImageButton actionButton;
         
         UrlInputBox(Context context) {
             super(context);
-            init();
-        }
-        
-        void init() {
+            setPadding(5, 0, 5, 0);
             setElevation(3);
             setClipToPadding(false);
             setBackgroundResource(R.drawable.edibox_light_background);
-            setGravity(Gravity.CENTER_VERTICAL);
 
+            faviconButton = new ImageButton(getContext());
+            faviconButton.setId(faviconButton.generateViewId());
+            faviconButton.setOnClickListener(MainToolbar.this);
+            faviconButton.setPadding(4, 4, 4, 4);
+            faviconButton.setScaleType(ImageButton.ScaleType.CENTER_INSIDE);
+            faviconButton.setBackgroundResource(R.drawable.gradient_touch_effect);
+            faviconButton.setImageResource(android.R.drawable.ic_menu_search);
+            LayoutParams faviconParams = new LayoutParams(45, 45);
+            faviconParams.addRule(CENTER_VERTICAL, TRUE);
+            faviconParams.addRule(ALIGN_PARENT_LEFT, TRUE);
+            addView(faviconButton, faviconParams);
+            
+            actionButton = new ImageButton(getContext());
+            actionButton.setId(actionButton.generateViewId());
+            actionButton.setOnClickListener(MainToolbar.this);
+            actionButton.setPadding(4, 4, 4, 4);
+            actionButton.setScaleType(ImageButton.ScaleType.CENTER_INSIDE);
+            actionButton.setBackgroundResource(R.drawable.gradient_touch_effect);
+            actionButton.setImageResource(android.R.drawable.ic_btn_speak_now);
+            actionButton.setVisibility(GONE);
+            LayoutParams actionButtonParams = new LayoutParams(45, 45);
+            actionButtonParams.addRule(CENTER_VERTICAL, TRUE);
+            actionButtonParams.addRule(ALIGN_PARENT_RIGHT, TRUE);
+            addView(actionButton, actionButtonParams);
+            
             urlInput = new UrlInputEditText(getContext());
             GoogleSuggestionAdapter adapter = new GoogleSuggestionAdapter(getContext(), R.layout.main_urlinput_dropdown, R.id.main_urlinput_dropdown_title);
+            adapter.add("hello World");
             adapter.bindTo(urlInput);
-            addView(urlInput, MATCH_PARENT, WRAP_CONTENT);
+            LayoutParams urlInputParams = new LayoutParams(MATCH_PARENT, WRAP_CONTENT);
+            urlInputParams.addRule(CENTER_VERTICAL, TRUE);
+            urlInputParams.addRule(RIGHT_OF, faviconButton.getId());
+            urlInputParams.addRule(LEFT_OF, actionButton.getId());
+            addView(urlInput, urlInputParams);
+            
+            urlInput.setOnFocusChangeListener(new OnFocusChangeListener() {
+
+                @Override
+                public void onFocusChange(View view, boolean hasFocus) {
+                    final int visibleIfFocused = (hasFocus) ? VISIBLE : GONE;
+                    final int goneIfFocused = (hasFocus) ? GONE : VISIBLE;
+                    expandUrlInputBox(hasFocus);
+                    updateActionButtonImage();
+                    faviconButton.setVisibility(goneIfFocused);
+                    actionButton.setVisibility(visibleIfFocused);
+                }
+                    
+            });
+            
+            urlInput.addTextChangedListener(new TextWatcher() {
+
+                @Override
+                public void beforeTextChanged(CharSequence text, int p2, int p3, int p4) {
+                    // TODO: Nothing
+                }
+
+                @Override
+                public void onTextChanged(CharSequence text, int p2, int p3, int p4) {
+                    // TODO: Nothing
+                }
+
+                @Override
+                public void afterTextChanged(Editable text) {
+                    updateActionButtonImage();
+                }
+                    
+            });
+        }
+        
+        private void updateActionButtonImage() {
+            if (urlInput.getText().length() > 0) {
+                actionButton.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
+            } else {
+                actionButton.setImageResource(android.R.drawable.ic_btn_speak_now);
+            }
         }
         
     }

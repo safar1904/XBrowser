@@ -58,7 +58,6 @@ public class UrlInputEditText extends AppCompatAutoCompleteTextView {
             showSoftKeyboard(false);
         } else {
             clearSpan();
-            showSoftKeyboard(true);
         }
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
     }
@@ -67,7 +66,7 @@ public class UrlInputEditText extends AppCompatAutoCompleteTextView {
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         if (show) {
             //imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
-            imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT);
+            imm.showSoftInput(this, InputMethodManager.SHOW_FORCED);
         } else {
             //imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
             imm.hideSoftInputFromWindow(getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);

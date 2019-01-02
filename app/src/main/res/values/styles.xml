@@ -3,9 +3,28 @@
     <style name="AppTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
 	</style>
     
-    <style name="small_dimension" parent="@style/AppTheme">
-        <item name="android:layout_width">15dp</item>
-        <item name="android:layout_height">15dp</item>
+    <style name="smallButton" parent="@android:style/Widget.Button">
+        <item name="android:layout_width">30dp</item>
+        <item name="android:layout_height">30dp</item>
+        <item name="android:padding">2dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:scaleType">fitCenter</item>
+    </style>
+    
+    <style name="mediumButton" parent="@android:style/Widget.Button">
+        <item name="android:layout_width">45dp</item>
+        <item name="android:layout_height">45dp</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:scaleType">fitCenter</item>
+    </style>
+    
+    <style name="mediumImageButton" parent="@android:style/Widget.ImageButton">
+        <item name="android:layout_width">45dp</item>
+        <item name="android:layout_height">45dp</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:scaleType">fitCenter</item>
     </style>
     
 </resources>

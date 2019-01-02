@@ -16,6 +16,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
+        setImmersive(true);
+        
         WebView webView = (WebView) findViewById(R.id.main_WebView);
         webView.setWebViewClient(new WebViewClient());
         webView.loadUrl("file:///sdcard/index.html");
