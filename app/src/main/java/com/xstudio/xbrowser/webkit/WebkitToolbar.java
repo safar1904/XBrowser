@@ -126,6 +126,7 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
             urlInputBox.backupUrl = url;
         } else {
             urlInputBox.urlInput.setText(url);
+            urlInputBox.urlInput.spanUrl();
         }
     }
 
@@ -151,6 +152,10 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
     
     public void setOnRequestUrlListener(OnRequestUrlListener listener) {
         onRequestUrlListener = listener;
+    }
+    
+    public void setOnIconClickListener(View.OnClickListener listener) {
+        urlInputBox.faviconButton.setOnClickListener(listener);
     }
     
     public EditText getUrlInput() {
@@ -261,8 +266,8 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
             faviconButton.setPadding(dpToPx(2F), dpToPx(2F), dpToPx(2F), dpToPx(2F));
             faviconButton.setScaleType(AppCompatImageButton.ScaleType.CENTER_INSIDE);
             faviconButton.setBackgroundResource(R.drawable.gradient_touch_effect);
-            faviconButton.setImageResource(android.R.drawable.ic_menu_search);
-            LayoutParams faviconParams = new LayoutParams(dpToPx(25F), dpToPx(25F));
+            faviconButton.setImageResource(android.R.drawable.ic_menu_compass);
+            LayoutParams faviconParams = new LayoutParams(dpToPx(30F), dpToPx(30F));
             faviconParams.addRule(CENTER_VERTICAL, TRUE);
             faviconParams.addRule(ALIGN_PARENT_LEFT, TRUE);
             addView(faviconButton, faviconParams);
@@ -291,8 +296,8 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
 
                     @Override
                     public void onFocusChange(View view, boolean hasFocus) {
-                        final int visibleIfFocused = (hasFocus) ? VISIBLE : GONE;
-                        final int goneIfFocused = (hasFocus) ? GONE : VISIBLE;
+                        int visibleIfFocused = (hasFocus) ? VISIBLE : GONE;
+                        int goneIfFocused = (hasFocus) ? GONE : VISIBLE;
                         expandUrlInputBox(hasFocus);
                         updateActionButtonImage();
                         faviconButton.setVisibility(goneIfFocused);
@@ -301,6 +306,7 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
                             backupUrl = urlInput.getText().toString();
                         } else {
                             urlInput.setText(backupUrl);
+                            urlInput.spanUrl();
                         }
                         showSuggestion(hasFocus);
                     }

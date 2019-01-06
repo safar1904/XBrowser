@@ -7,6 +7,7 @@ import android.content.Context;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.view.LayoutInflater;
+import com.xstudio.xbrowser.R;
 import android.widget.TextView;
 import com.xstudio.xbrowser.util.TitleAndSubtitleHolder;
 import android.view.View;
@@ -33,6 +34,7 @@ public class InputSuggestionAdapter extends ArrayAdapter<TitleAndSubtitleHolder>
     public View getView(int position, View view, ViewGroup parent) {
         if (view == null) {
             view = inflater.inflate(layoutResId, parent, false);
+            view.setBackgroundResource(R.drawable.abc_item_background_holo_light);
         }
         if (view.getTag() == null && !(view.getTag() instanceof ViewHolder)) {
             ViewHolder viewHolder = new ViewHolder();

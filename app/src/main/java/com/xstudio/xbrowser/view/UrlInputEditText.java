@@ -1,6 +1,6 @@
 package com.xstudio.xbrowser.view;
 
-import android.support.v7.widget.AppCompatAutoCompleteTextView;
+import android.support.v7.widget.AppCompatEditText;
 import android.widget.ArrayAdapter;
 import android.util.AttributeSet;
 import android.graphics.Color;
@@ -17,19 +17,16 @@ import android.text.style.StrikethroughSpan;
 import android.net.Uri;
 import android.view.View;
 
-public class UrlInputEditText extends AppCompatAutoCompleteTextView {
+public class UrlInputEditText extends AppCompatEditText {
     
-    final String GREEN = "#23AC14";
-    final String RED = "#DB1524";
-    final String GREY = "#B5B5B5";
+    final int GREEN = Color.parseColor("#23AC14");
+    final int RED = Color.parseColor("#DB1524");
+    final int GREY = Color.parseColor("#B5B5B5");
     
     public enum UrlType { HTTPS_RISK, ONLINE, OFFLINE }
     
     private OnImeActionGoListener onImeActionGoListener;
     private UrlType urlType;
-    
-    private ForegroundColorSpan greenColorSpan;
-    private ForegroundColorSpan greyColorSpan;
     
     public UrlInputEditText(Context context) {
         super(context);
@@ -65,10 +62,8 @@ public class UrlInputEditText extends AppCompatAutoCompleteTextView {
     private void showSoftKeyboard(boolean show) {
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         if (show) {
-            //imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
             imm.showSoftInput(this, InputMethodManager.SHOW_FORCED);
         } else {
-            //imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
             imm.hideSoftInputFromWindow(getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }
@@ -85,26 +80,26 @@ public class UrlInputEditText extends AppCompatAutoCompleteTextView {
     }
     
     public void spanUrl() {
+        final String wholeText = getText().toString();
+        if (wholeText.length() == 0) {
+            return;
+        }
         final String https = "https";
         final String schemeDelim = "://";
-        final String wholeText = getText().toString();
         final Spannable span = new SpannableString(wholeText);
         final Uri uri = Uri.parse(wholeText);
         
-        if (uri.getHost() != null && uri.getPath() != null) {
+        if (uri.getHost() != null && uri.getHost().length() > 0 && uri.getPath() != null) {
             final int hostIndex = wholeText.indexOf(uri.getHost());
-            final String path = uri.getPath();
-            final int start = wholeText.indexOf(path, hostIndex);
-            if (start == hostIndex + uri.getHost().length()) {
-                final int end = wholeText.length();
-                span.setSpan(new ForegroundColorSpan(Color.parseColor(GREY)), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
+            final int start = hostIndex + uri.getHost().length();
+            final int end = wholeText.length();
+            span.setSpan(getGreyColorSpan(), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         
         boolean schemeHasSpanned = false;
         if (wholeText.startsWith(https + schemeDelim)) {
             if (urlType == UrlType.HTTPS_RISK) {
-                span.setSpan(new ForegroundColorSpan(Color.parseColor(RED)), 0, https.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                span.setSpan(getRedColorSpan(), 0, https.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 span.setSpan(new StrikethroughSpan(), 0, https.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 schemeHasSpanned = true;
             } else if (urlType == UrlType.ONLINE) {
@@ -115,10 +110,10 @@ public class UrlInputEditText extends AppCompatAutoCompleteTextView {
             if (schemeIndex > 0) {
                 span.setSpan(getGreyColorSpan(), schemeIndex, schemeIndex + schemeDelim.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
-        }
-        if (!schemeHasSpanned && uri.getScheme() != null) {
-            final String scheme = uri.getScheme() + schemeDelim;
-            span.setSpan(getGreyColorSpan(), 0, scheme.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        } 
+        
+        if (!schemeHasSpanned && ("http".equals(uri.getScheme()) || "https".equals(uri.getScheme()))) {
+            span.setSpan(getGreyColorSpan(), 0, (uri.getScheme() + schemeDelim).length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         
         setText(span, BufferType.SPANNABLE);
@@ -129,17 +124,15 @@ public class UrlInputEditText extends AppCompatAutoCompleteTextView {
     }
     
     private ForegroundColorSpan getGreenColorSpan() {
-        if (greenColorSpan == null) {
-            greenColorSpan = new ForegroundColorSpan(Color.parseColor(GREEN));
-        }
-        return greenColorSpan;
+        return new ForegroundColorSpan(GREEN);
     }
     
     private ForegroundColorSpan getGreyColorSpan() {
-        if (greyColorSpan == null) {
-            greyColorSpan = new ForegroundColorSpan(Color.parseColor(GREY));
-        }
-        return greyColorSpan;
+        return new ForegroundColorSpan(GREY);
+    }
+    
+    private ForegroundColorSpan getRedColorSpan() {
+        return new ForegroundColorSpan(RED);
     }
     
     private void init() {
@@ -148,16 +141,9 @@ public class UrlInputEditText extends AppCompatAutoCompleteTextView {
         setInputType(InputType.TYPE_TEXT_VARIATION_URI);
         setImeOptions(EditorInfo.IME_ACTION_GO);
         setGravity(Gravity.CENTER_VERTICAL);
-        
-        if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.M) {
-            setTextAppearance(getContext(), android.R.style.TextAppearance);
-        } else {
-            setTextAppearance(android.R.style.TextAppearance);
-        }
-        
-        setThreshold(1);
         setHint("Search or type URL");
-        setUrlType(UrlType.ONLINE);
+        setTextAppearance(getContext(), android.R.style.TextAppearance);
+        setUrlType(UrlType.OFFLINE);
     }
     
     public static interface OnImeActionGoListener {

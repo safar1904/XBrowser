@@ -18,7 +18,7 @@ public class OnBackPressedHelper {
     }
     
     public static boolean onBackPressed() {
-        if (!stacks.empty()) {
+        if (stacks != null && !stacks.empty()) {
             return stacks.pop().onBackPressed();
         }
         return false;
