@@ -45,7 +45,7 @@ public class UrlInputEditText extends AppCompatAutoCompleteTextView {
     public void onEditorAction(int actionCode) {
         super.onEditorAction(actionCode);
         if (actionCode == EditorInfo.IME_ACTION_GO && onImeActionGoListener != null) {
-            onImeActionGoListener.onImeActionGo(getText().toString());
+            onImeActionGoListener.onImeActionGo(this, getText().toString());
         }
         clearFocus();
     }
@@ -161,7 +161,7 @@ public class UrlInputEditText extends AppCompatAutoCompleteTextView {
     }
     
     public static interface OnImeActionGoListener {
-        void onImeActionGo(String url);
+        void onImeActionGo(UrlInputEditText view, String url);
     }
     
 }

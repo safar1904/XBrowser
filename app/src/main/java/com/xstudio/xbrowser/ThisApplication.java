@@ -3,14 +3,14 @@ package com.xstudio.xbrowser;
 import android.app.Activity;
 import android.app.Application;
 import java.util.concurrent.atomic.AtomicBoolean;
+import android.content.res.Configuration;
 import com.xstudio.xbrowser.util.Logger;
 
 public class ThisApplication extends Application {
 
     private static ThisApplication instance;
     private Activity mainActivity;
-    private final AtomicBoolean isPingerRunning = new AtomicBoolean(false);
-
+    
     @Override
     public void onCreate() {
         instance = this;
@@ -30,8 +30,18 @@ public class ThisApplication extends Application {
     }
 
     @Override
-    public void onTerminate() {
-        super.onTerminate();
+    public void onLowMemory() {
+        super.onLowMemory();
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
     }
 
     public void setMainActivity(Activity activity) {
@@ -44,14 +54,6 @@ public class ThisApplication extends Application {
 
     public static ThisApplication getInstance() {
         return instance;
-    }
-
-    public void runPinger(boolean running) {
-        isPingerRunning.set(running);
-    }
-
-    public boolean isPingerRunning() {
-        return isPingerRunning.get();
     }
 
 }

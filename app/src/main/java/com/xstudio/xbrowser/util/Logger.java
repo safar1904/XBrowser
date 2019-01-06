@@ -5,8 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import com.xstudio.xbrowser.ThisApplication;
 
-public class Logger
-{
+public class Logger {
 
     public static final int DEBUG = 4;
     public static final int INFO = 3;
@@ -19,8 +18,7 @@ public class Logger
     private static File logFile;
 
 
-    public static void debug(final String tag, final String message)
-    {
+    public static void debug(final String tag, final String message) {
         if (sLogLevel < DEBUG) {
             return;
         }
@@ -34,8 +32,7 @@ public class Logger
         }.start();
     }
 
-    public static void info(final String tag, final String message)
-    {
+    public static void info(final String tag, final String message) {
         if (sLogLevel < INFO) {
             return;
         }
@@ -49,8 +46,7 @@ public class Logger
         }.start();
     }
 
-    public static void warn(final String tag, final String message)
-    {
+    public static void warn(final String tag, final String message) {
         if (sLogLevel < WARN) {
             return;
         }
@@ -92,8 +88,7 @@ public class Logger
         sLogDirectory = path;
     }
 
-    private synchronized static void write(String tag, String msg) throws IOException
-    {
+    private synchronized static void write(String tag, String msg) throws IOException {
         if (logDir == null) {
             logDir = new File(sLogDirectory + File.separator + ThisApplication.getInstance().getPackageName());
         }
@@ -112,8 +107,7 @@ public class Logger
         }
     }
 
-    private synchronized static void write(Throwable e) throws IOException
-    {
+    private synchronized static void write(Throwable e) throws IOException {
         if (logDir == null) {
             logDir = new File(sLogDirectory + File.separator + ThisApplication.getInstance().getPackageName());
         }

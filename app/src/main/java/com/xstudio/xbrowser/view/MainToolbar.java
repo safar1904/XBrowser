@@ -82,9 +82,6 @@ public class MainToolbar extends RelativeLayout implements View.OnClickListener 
     }
     
     private void expandUrlInputBox(boolean expand) {
-        if (getWidth() > 500) {
-            return;
-        }
         if (expand) {
             selectWindowButton.setVisibility(GONE);
             moreButton.setVisibility(GONE);
@@ -99,6 +96,8 @@ public class MainToolbar extends RelativeLayout implements View.OnClickListener 
         final UrlInputEditText urlInput;
         final ImageButton faviconButton;
         final ImageButton actionButton;
+        
+        String backupUrl;
         
         UrlInputBox(Context context) {
             super(context);
@@ -152,6 +151,11 @@ public class MainToolbar extends RelativeLayout implements View.OnClickListener 
                     updateActionButtonImage();
                     faviconButton.setVisibility(goneIfFocused);
                     actionButton.setVisibility(visibleIfFocused);
+                    if (hasFocus) {
+                        backupUrl = urlInput.getText().toString();
+                    } else {
+                        urlInput.setText(backupUrl);
+                    }
                 }
                     
             });
@@ -172,7 +176,7 @@ public class MainToolbar extends RelativeLayout implements View.OnClickListener 
                 public void afterTextChanged(Editable text) {
                     updateActionButtonImage();
                 }
-                    
+                
             });
         }
         

@@ -3,36 +3,20 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:clipChildren="false">
     
     <view
-        class="com.xstudio.xbrowser.WebkitAppBarLayout"
-        android:id="@+id/main_appbar"
+        class="com.xstudio.xbrowser.webkit.WebkitToolbar"
+        android:id="@+id/main_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        
-        <view
-            class="com.xstudio.xbrowser.view.MainToolbar"
-            android:id="@+id/main_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="57dp"
-            app:layout_scrollFlags="scroll|enterAlways|snap"/>
-        
-    </view>
-
-    <view
-        class="android.support.v4.widget.NestedScrollView"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"/>
+    
+    <com.xstudio.xbrowser.webkit.WebkitView
+        android:id="@+id/main_webview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-        
-        <view
-            class="android.webkit.WebView"
-            android:id="@+id/main_WebView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-        
-    </view>
-
+        android:layout_height="match_parent"/>
+    
 </view>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+    android:clickable="true"
+	android:padding="10dp"
+	android:clipToPadding="false">
+
+	<ImageButton
+		style="@style/mediumImageButton"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:src="@android:drawable/ic_menu_set_as"
+		android:id="@android:id/button1"
+		android:layout_centerVertical="true"
+		android:layout_alignParentRight="true"
+		android:background="@drawable/gradient_touch_effect"/>
+
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:orientation="vertical"
+		android:layout_centerVertical="true"
+		android:layout_toLeftOf="@android:id/button1">
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:text="Title"
+			android:id="@android:id/text1"/>
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textAppearance="?android:attr/textAppearanceSmall"
+			android:text="Sub Title"
+			android:textColor="?attr/colorAccent"
+			android:id="@android:id/text2"/>
+
+	</LinearLayout>
+
+</RelativeLayout>
+
