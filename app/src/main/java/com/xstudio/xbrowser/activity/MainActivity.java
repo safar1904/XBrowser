@@ -32,12 +32,10 @@ public class MainActivity extends AppCompatActivity {
         webView.loadUrl("file:///sdcard/index.html");
         
         toolbar.setOnRequestUrlListener(new WebkitToolbar.OnRequestUrlListener() {
-
             @Override
             public void requestUrl(String url) {
                 webView.loadUrl(url);
             }
-            
         });
         
     }

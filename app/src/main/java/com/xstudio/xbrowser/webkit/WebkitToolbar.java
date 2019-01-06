@@ -14,18 +14,19 @@ import android.widget.EditText;
 import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import com.xstudio.xbrowser.util.OnBackPressedHelper;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ProgressBar;
 import com.xstudio.xbrowser.R;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.text.TextWatcher;
+import com.xstudio.xbrowser.util.TitleAndSubtitleHolder;
 import com.xstudio.xbrowser.view.UrlInputEditText;
 import android.view.View;
 
 import static android.widget.RelativeLayout.LayoutParams.*;
 import static com.xstudio.xbrowser.util.Measurements.*;
-import com.xstudio.xbrowser.util.*;
 
 public class WebkitToolbar extends RelativeLayout implements View.OnClickListener, WebkitView.Toolbar {
 
@@ -132,7 +133,7 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
 
     @Override
     public void setTitle(String title) {
-        // TODO: Nothing
+        // TODO: Implement this method
     }
 
     @Override
@@ -199,7 +200,6 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
     
     
     private final OnItemClickListener onItemClickListener = new OnItemClickListener() {
-
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
             TitleAndSubtitleHolder item = (TitleAndSubtitleHolder) adapterView.getItemAtPosition(position);
@@ -209,28 +209,26 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
                 onRequestUrlListener.requestUrl(url);
             }
         }
-
     };
     
     private final UrlInputEditText.OnImeActionGoListener onImeActionGoListener = new UrlInputEditText.OnImeActionGoListener() {
-
         @Override
         public void onImeActionGo(UrlInputEditText view, String url) {
             if (onRequestUrlListener != null) {
                 onRequestUrlListener.requestUrl(url);
             }
         }
-
     };
     
     private final OnBackPressedHelper.Receiver onBackPressedReceiver = new OnBackPressedHelper.Receiver() {
-
         @Override
         public boolean onBackPressed() {
-            urlInputBox.urlInput.clearFocus();
-            return true;
+            if (urlInputBox.urlInput.hasFocus()) {
+                urlInputBox.urlInput.clearFocus();
+                return true;
+            }
+            return false;
         }
-
     };
     
     
@@ -241,14 +239,12 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
     public static interface OnRequestUrlListener {
         void requestUrl(String url);
     }
-    
 
     private class UrlInputBox extends RelativeLayout {
-
+        
         private final UrlInputEditText urlInput;
         private final AppCompatImageButton faviconButton;
         private final AppCompatImageButton actionButton;
-
         private String backupUrl;
 
         private UrlInputBox(Context context) {
@@ -293,7 +289,6 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
             addView(urlInput, urlInputParams);
 
             urlInput.setOnFocusChangeListener(new OnFocusChangeListener() {
-
                     @Override
                     public void onFocusChange(View view, boolean hasFocus) {
                         int visibleIfFocused = (hasFocus) ? VISIBLE : GONE;
@@ -308,13 +303,11 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
                             urlInput.setText(backupUrl);
                             urlInput.spanUrl();
                         }
-                        showSuggestion(hasFocus);
+                        WebkitToolbar.this.showSuggestion(hasFocus);
                     }
-
                 });
 
             urlInput.addTextChangedListener(new TextWatcher() {
-
                     @Override
                     public void beforeTextChanged(CharSequence text, int p2, int p3, int p4) {
                         //TODO: Nothing
@@ -323,7 +316,7 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
                     @Override
                     public void onTextChanged(CharSequence text, int p2, int p3, int p4) {
                         if (suggestionAdapter != null) {
-                            suggestionAdapter.getFilter().filter(text.length() > 0 ? text : NO_MATCH_SUGGESTION);
+                            WebkitToolbar.this.suggestionAdapter.getFilter().filter(text.length() > 0 ? text : NO_MATCH_SUGGESTION);
                         }
                     }
 
@@ -331,7 +324,6 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
                     public void afterTextChanged(Editable text) {
                         updateActionButtonImage();
                     }
-                  
                 });
         }
 

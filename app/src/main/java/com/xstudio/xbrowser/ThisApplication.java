@@ -18,30 +18,15 @@ public class ThisApplication extends Application {
 
         Logger.setLogLevel(Logger.DEBUG);
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-                @Override
-                public void uncaughtException(Thread thread, Throwable e) {
-                    Logger.crash(e);
-                    if (ThisApplication.this.mainActivity != null) {
-                        ThisApplication.this.mainActivity.finish();
-                    }
-                    System.exit(1);
+            @Override
+            public void uncaughtException(Thread thread, Throwable e) {
+                Logger.crash(e);
+                if (ThisApplication.this.mainActivity != null) {
+                     ThisApplication.this.mainActivity.finish();
                 }
-            });
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-    }
-
-    @Override
-    public void onTrimMemory(int level) {
-        super.onTrimMemory(level);
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
+                System.exit(1);
+            }
+        });
     }
 
     public void setMainActivity(Activity activity) {
