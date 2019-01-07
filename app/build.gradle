@@ -20,7 +20,7 @@ android {
 }
 
 dependencies {
-	
+	compile 'com.google.android.gms:play-services-analytics:+'
 	compile 'com.android.support:appcompat-v7:+'
 	compile 'com.android.support:design:+'
 	compile 'com.android.support:support-v4:+'

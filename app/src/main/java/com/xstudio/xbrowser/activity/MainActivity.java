@@ -11,14 +11,17 @@ import android.webkit.*;
 import com.xstudio.xbrowser.view.*;
 import android.widget.*;
 import com.xstudio.xbrowser.util.*;
+import android.content.*;
+import android.provider.*;
+import android.net.*;
+import com.google.android.gms.analytics.*;
 
 public class MainActivity extends AppCompatActivity {
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ThisApplication.getInstance().setMainActivity(this);
-        
         super.onCreate(savedInstanceState);
+        ThisApplication.getInstance().setMainActivity(this);
         setContentView(R.layout.main);
         
         WebkitToolbar toolbar = (WebkitToolbar) findViewById(R.id.main_toolbar);
@@ -38,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        intent.setData(Uri.parse("package:com.xstudio.xbrowser"));
+        startActivity(intent);
     }
 
     @Override

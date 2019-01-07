@@ -196,6 +196,8 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
         } else {
             suggestionListView.setVisibility(GONE);
         }
+        
+        
     }
     
     
