@@ -11,10 +11,6 @@ import android.webkit.*;
 import com.xstudio.xbrowser.view.*;
 import android.widget.*;
 import com.xstudio.xbrowser.util.*;
-import android.content.*;
-import android.provider.*;
-import android.net.*;
-import com.google.android.gms.analytics.*;
 
 public class MainActivity extends AppCompatActivity {
     
@@ -41,9 +37,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         
-        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        intent.setData(Uri.parse("package:com.xstudio.xbrowser"));
-        startActivity(intent);
     }
 
     @Override

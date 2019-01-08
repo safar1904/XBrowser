@@ -2,8 +2,6 @@ package com.xstudio.xbrowser;
 
 import android.app.Activity;
 import android.app.Application;
-import java.util.concurrent.atomic.AtomicBoolean;
-import android.content.res.Configuration;
 import com.xstudio.xbrowser.util.Logger;
 import com.google.android.gms.analytics.*;
 

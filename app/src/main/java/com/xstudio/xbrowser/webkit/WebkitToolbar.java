@@ -14,7 +14,6 @@ import android.widget.EditText;
 import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import com.xstudio.xbrowser.util.OnBackPressedHelper;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ProgressBar;
 import com.xstudio.xbrowser.R;
@@ -133,7 +132,7 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
 
     @Override
     public void setTitle(String title) {
-        // TODO: Implement this method
+        // Not yet implemented
     }
 
     @Override
@@ -192,12 +191,9 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
         }
         if (show) {
             suggestionListView.setVisibility(VISIBLE);
-            OnBackPressedHelper.pushReceiver(onBackPressedReceiver);
         } else {
             suggestionListView.setVisibility(GONE);
         }
-        
-        
     }
     
     
@@ -219,17 +215,6 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
             if (onRequestUrlListener != null) {
                 onRequestUrlListener.requestUrl(url);
             }
-        }
-    };
-    
-    private final OnBackPressedHelper.Receiver onBackPressedReceiver = new OnBackPressedHelper.Receiver() {
-        @Override
-        public boolean onBackPressed() {
-            if (urlInputBox.urlInput.hasFocus()) {
-                urlInputBox.urlInput.clearFocus();
-                return true;
-            }
-            return false;
         }
     };
     

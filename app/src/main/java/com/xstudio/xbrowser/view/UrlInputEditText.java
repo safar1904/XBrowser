@@ -10,6 +10,7 @@ import android.text.style.ForegroundColorSpan;
 import android.view.Gravity;
 import android.view.inputmethod.InputMethodManager;
 import android.text.InputType;
+import android.view.KeyEvent;
 import android.graphics.Rect;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -57,6 +58,14 @@ public class UrlInputEditText extends AppCompatEditText {
             clearSpan();
         }
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
+    }
+    
+    @Override
+    public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+            clearFocus();
+        }
+        return false;
     }
     
     private void showSoftKeyboard(boolean show) {
