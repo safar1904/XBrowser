@@ -7,6 +7,7 @@ import android.support.v7.widget.AppCompatImageButton;
 import android.widget.ArrayAdapter;
 import android.util.AttributeSet;
 import android.graphics.Bitmap;
+import de.hdodenhof.circleimageview.CircleImageView;
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
@@ -230,7 +231,7 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
     private class UrlInputBox extends RelativeLayout {
         
         private final UrlInputEditText urlInput;
-        private final AppCompatImageButton faviconButton;
+        private final CircleImageView faviconButton;
         private final AppCompatImageButton actionButton;
         private String backupUrl;
 
@@ -243,14 +244,14 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
             setFocusableInTouchMode(true);
             setBackgroundResource(R.drawable.edibox_light_background);
 
-            faviconButton = new AppCompatImageButton(getContext());
+            faviconButton = new CircleImageView(getContext());
             faviconButton.setId(faviconButton.generateViewId());
+            faviconButton.setClickable(true);
             faviconButton.setOnClickListener(WebkitToolbar.this);
             faviconButton.setPadding(dpToPx(2F), dpToPx(2F), dpToPx(2F), dpToPx(2F));
-            faviconButton.setScaleType(AppCompatImageButton.ScaleType.CENTER_INSIDE);
             faviconButton.setBackgroundResource(R.drawable.gradient_touch_effect);
-            faviconButton.setImageResource(android.R.drawable.ic_menu_compass);
-            LayoutParams faviconParams = new LayoutParams(dpToPx(30F), dpToPx(30F));
+            faviconButton.setImageResource(android.R.drawable.ic_menu_search);
+            LayoutParams faviconParams = new LayoutParams(dpToPx(25F), dpToPx(25F));
             faviconParams.addRule(CENTER_VERTICAL, TRUE);
             faviconParams.addRule(ALIGN_PARENT_LEFT, TRUE);
             addView(faviconButton, faviconParams);
