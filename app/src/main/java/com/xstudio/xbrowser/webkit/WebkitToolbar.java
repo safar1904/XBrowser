@@ -11,10 +11,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.view.Gravity;
+import android.view.inputmethod.InputMethodManager;
+import android.view.KeyEvent;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import com.xstudio.xbrowser.view.NiceEditText;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ProgressBar;
 import com.xstudio.xbrowser.R;
@@ -22,7 +26,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.text.TextWatcher;
 import com.xstudio.xbrowser.util.TitleAndSubtitleHolder;
-import com.xstudio.xbrowser.view.UrlInputEditText;
+import com.xstudio.xbrowser.webkit.UrlSpanner;
 import android.view.View;
 
 import static android.widget.RelativeLayout.LayoutParams.*;
@@ -33,6 +37,7 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
     @Deprecated
     private static final String NO_MATCH_SUGGESTION = " ";
     
+    private final InputMethodManager inputMethodManager;
     private final AppCompatImageButton moreButton;
     private final AppCompatButton selectWindowButton;
     private final UrlInputBox urlInputBox;
@@ -47,6 +52,8 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
         super(context, attrs);
         setElevation(dpToPx(3.5F));
         setClipToPadding(false);
+        
+        inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         
         RelativeLayout innerLayout = new RelativeLayout(getContext());
         innerLayout.setId(innerLayout.generateViewId());
@@ -86,7 +93,6 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
         innerLayout.addView(selectWindowButton, params2);
 
         urlInputBox = new UrlInputBox(getContext());
-        urlInputBox.urlInput.setOnImeActionGoListener(onImeActionGoListener);
         LayoutParams params3 = new LayoutParams(MATCH_PARENT, WRAP_CONTENT);
         params3.addRule(CENTER_VERTICAL);
         params3.addRule(LEFT_OF, selectWindowButton.getId());
@@ -127,7 +133,7 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
             urlInputBox.backupUrl = url;
         } else {
             urlInputBox.urlInput.setText(url);
-            urlInputBox.urlInput.spanUrl();
+            urlInputBox.urlInput.forceSpanAll();
         }
     }
 
@@ -210,15 +216,13 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
         }
     };
     
-    private final UrlInputEditText.OnImeActionGoListener onImeActionGoListener = new UrlInputEditText.OnImeActionGoListener() {
-        @Override
-        public void onImeActionGo(UrlInputEditText view, String url) {
-            if (onRequestUrlListener != null) {
-                onRequestUrlListener.requestUrl(url);
-            }
+    private void showSoftKeyboard(boolean show) {
+        if (show) {
+            inputMethodManager.showSoftInput(urlInputBox.urlInput, InputMethodManager.SHOW_IMPLICIT);
+        } else {
+            inputMethodManager.hideSoftInputFromWindow(getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
-    };
-    
+    }
     
     public static interface SpeechRecognitionCallback {
         void request(TextView output);
@@ -230,9 +234,9 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
 
     private class UrlInputBox extends RelativeLayout {
         
-        private final UrlInputEditText urlInput;
-        private final CircleImageView faviconButton;
-        private final AppCompatImageButton actionButton;
+        private NiceEditText urlInput;
+        private CircleImageView faviconButton;
+        private AppCompatImageButton actionButton;
         private String backupUrl;
 
         private UrlInputBox(Context context) {
@@ -243,19 +247,26 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
             setFocusable(true);
             setFocusableInTouchMode(true);
             setBackgroundResource(R.drawable.edibox_light_background);
-
+            
+            initFaviconButton();
+            initActionButton();
+            initUrlInput();
+        }
+            
+        private void initFaviconButton() {
             faviconButton = new CircleImageView(getContext());
             faviconButton.setId(faviconButton.generateViewId());
             faviconButton.setClickable(true);
             faviconButton.setOnClickListener(WebkitToolbar.this);
             faviconButton.setPadding(dpToPx(2F), dpToPx(2F), dpToPx(2F), dpToPx(2F));
-            faviconButton.setBackgroundResource(R.drawable.gradient_touch_effect);
             faviconButton.setImageResource(android.R.drawable.ic_menu_search);
             LayoutParams faviconParams = new LayoutParams(dpToPx(25F), dpToPx(25F));
             faviconParams.addRule(CENTER_VERTICAL, TRUE);
             faviconParams.addRule(ALIGN_PARENT_LEFT, TRUE);
             addView(faviconButton, faviconParams);
-
+        }
+        
+        private void initActionButton() {
             actionButton = new AppCompatImageButton(getContext());
             actionButton.setId(actionButton.generateViewId());
             actionButton.setOnClickListener(WebkitToolbar.this);
@@ -268,8 +279,18 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
             actionButtonParams.addRule(CENTER_VERTICAL, TRUE);
             actionButtonParams.addRule(ALIGN_PARENT_RIGHT, TRUE);
             addView(actionButton, actionButtonParams);
-
-            urlInput = new UrlInputEditText(getContext());
+        }
+        
+        private void initUrlInput() {
+            urlInput = new NiceEditText(getContext());
+            urlInput.setBackgroundResource(android.R.color.transparent);
+            urlInput.setTextAppearance(getContext(), android.R.style.TextAppearance);
+            urlInput.setGravity(Gravity.CENTER_VERTICAL);
+            urlInput.setSingleLine(true);
+            urlInput.setImeOptions(EditorInfo.IME_ACTION_GO);
+            urlInput.setSelectAllOnFocus(true);
+            urlInput.setSpanStrategy(NiceEditText.SpanStrategy.SPAN_WHEN_NOT_FOCUS);
+            urlInput.setTextSpanner(new UrlSpanner(UrlSpanner.UrlType.OFFLINE));
             LayoutParams urlInputParams = new LayoutParams(MATCH_PARENT, WRAP_CONTENT);
             urlInputParams.addRule(CENTER_VERTICAL, TRUE);
             urlInputParams.addRule(RIGHT_OF, faviconButton.getId());
@@ -277,42 +298,59 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
             addView(urlInput, urlInputParams);
 
             urlInput.setOnFocusChangeListener(new OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View view, boolean hasFocus) {
-                        int visibleIfFocused = (hasFocus) ? VISIBLE : GONE;
-                        int goneIfFocused = (hasFocus) ? GONE : VISIBLE;
-                        expandUrlInputBox(hasFocus);
-                        updateActionButtonImage();
-                        faviconButton.setVisibility(goneIfFocused);
-                        actionButton.setVisibility(visibleIfFocused);
-                        if (hasFocus) {
-                            backupUrl = urlInput.getText().toString();
-                        } else {
-                            urlInput.setText(backupUrl);
-                            urlInput.spanUrl();
-                        }
-                        WebkitToolbar.this.showSuggestion(hasFocus);
+                @Override
+                public void onFocusChange(View view, boolean hasFocus) {
+                    int visibleIfFocused = (hasFocus) ? VISIBLE : GONE;
+                    int goneIfFocused = (hasFocus) ? GONE : VISIBLE;
+                    WebkitToolbar.this.expandUrlInputBox(hasFocus);
+                    updateActionButtonImage();
+                    faviconButton.setVisibility(goneIfFocused);
+                    actionButton.setVisibility(visibleIfFocused);
+                    if (hasFocus) {
+                        backupUrl = urlInput.getText().toString();
+                    } else {
+                        urlInput.setText(backupUrl);
                     }
-                });
+                    WebkitToolbar.this.showSuggestion(hasFocus);
+                    WebkitToolbar.this.showSoftKeyboard(hasFocus);
+                }
+            });
 
             urlInput.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence text, int p2, int p3, int p4) {
-                        //TODO: Nothing
-                    }
+                @Override
+                public void beforeTextChanged(CharSequence text, int p2, int p3, int p4) {
+                    // EMPTY
+                }
 
-                    @Override
-                    public void onTextChanged(CharSequence text, int p2, int p3, int p4) {
-                        if (suggestionAdapter != null) {
-                            WebkitToolbar.this.suggestionAdapter.getFilter().filter(text.length() > 0 ? text : NO_MATCH_SUGGESTION);
-                        }
+                @Override
+                public void onTextChanged(CharSequence text, int p2, int p3, int p4) {
+                    if (suggestionAdapter != null) {
+                        WebkitToolbar.this.suggestionAdapter.getFilter().filter(text.length() > 0 ? text : NO_MATCH_SUGGESTION);
                     }
+                }
 
-                    @Override
-                    public void afterTextChanged(Editable text) {
-                        updateActionButtonImage();
+                @Override
+                public void afterTextChanged(Editable text) {
+                    updateActionButtonImage();
+                }
+            });
+            
+            urlInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView view, int actionCode, KeyEvent event) {
+                    switch (actionCode) {
+                        case EditorInfo.IME_ACTION_GO:
+                            urlInput.clearFocus();
+                            if (WebkitToolbar.this.onRequestUrlListener != null) {
+                                WebkitToolbar.this.onRequestUrlListener.requestUrl(view.getText().toString());
+                            }
+                            return true;
+                        default:
+                            break;
                     }
-                });
+                    return false;
+                }
+            });
         }
 
         private void updateActionButtonImage() {
