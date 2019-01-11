@@ -1,4 +1,4 @@
-package com.xstudio.xbrowser.view;
+package com.xstudio.xbrowser.widget;
 
 import android.widget.AutoCompleteTextView;
 import android.widget.ArrayAdapter;

@@ -1,4 +1,4 @@
-package com.xstudio.xbrowser.webkit;
+package com.xstudio.xbrowser.view;
 
 import android.widget.Adapter;
 import android.widget.AdapterView;
@@ -15,10 +15,11 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.view.Gravity;
 import android.view.inputmethod.InputMethodManager;
+import android.text.InputType;
 import android.view.KeyEvent;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import com.xstudio.xbrowser.view.NiceEditText;
+import com.xstudio.xbrowser.widget.NiceEditText;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ProgressBar;
 import com.xstudio.xbrowser.R;
@@ -26,7 +27,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.text.TextWatcher;
 import com.xstudio.xbrowser.util.TitleAndSubtitleHolder;
-import com.xstudio.xbrowser.webkit.UrlSpanner;
+import com.xstudio.xbrowser.text.style.UrlSpanner;
 import android.view.View;
 
 import static android.widget.RelativeLayout.LayoutParams.*;
@@ -117,8 +118,8 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
     
     @Override
     public void onClick(View view) {
-        final int viewId = view.getId();
-        if (viewId == urlInputBox.actionButton.getId()) {
+        final int id = view.getId();
+        if (id == urlInputBox.actionButton.getId()) {
            if (urlInputBox.urlInput.getText().length() > 0) {
                 urlInputBox.urlInput.getText().clear();
             } else if (speechRecogntionCallback != null) {
@@ -257,6 +258,7 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
             faviconButton = new CircleImageView(getContext());
             faviconButton.setId(faviconButton.generateViewId());
             faviconButton.setClickable(true);
+            faviconButton.setFocusable(true);
             faviconButton.setOnClickListener(WebkitToolbar.this);
             faviconButton.setPadding(dpToPx(2F), dpToPx(2F), dpToPx(2F), dpToPx(2F));
             faviconButton.setImageResource(android.R.drawable.ic_menu_search);
@@ -288,6 +290,7 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
             urlInput.setGravity(Gravity.CENTER_VERTICAL);
             urlInput.setSingleLine(true);
             urlInput.setImeOptions(EditorInfo.IME_ACTION_GO);
+            urlInput.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
             urlInput.setSelectAllOnFocus(true);
             urlInput.setSpanStrategy(NiceEditText.SpanStrategy.SPAN_WHEN_NOT_FOCUS);
             urlInput.setTextSpanner(new UrlSpanner(UrlSpanner.UrlType.OFFLINE));
@@ -340,10 +343,10 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
                 public boolean onEditorAction(TextView view, int actionCode, KeyEvent event) {
                     switch (actionCode) {
                         case EditorInfo.IME_ACTION_GO:
-                            urlInput.clearFocus();
                             if (WebkitToolbar.this.onRequestUrlListener != null) {
                                 WebkitToolbar.this.onRequestUrlListener.requestUrl(view.getText().toString());
                             }
+                            clearFocus();
                             return true;
                         default:
                             break;

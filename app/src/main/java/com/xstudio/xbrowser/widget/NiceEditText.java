@@ -1,4 +1,4 @@
-package com.xstudio.xbrowser.view;
+package com.xstudio.xbrowser.widget;
 
 import android.util.AttributeSet;
 import android.support.v7.widget.AppCompatEditText;
@@ -19,12 +19,10 @@ public class NiceEditText extends AppCompatEditText {
     
     public NiceEditText(Context context) {
         super(context);
-        init();
     }
     
     public NiceEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
     }
 
     @Override
@@ -79,25 +77,6 @@ public class NiceEditText extends AppCompatEditText {
                 setTextKeepState(textSpanner.span(getText().toString()), BufferType.SPANNABLE);
             }
         }
-    }
-
-    private void init() {
-        addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence p1, int p2, int p3, int p4) {
-                // EMPTY
-            }
-
-            @Override
-            public void onTextChanged(CharSequence p1, int p2, int p3, int p4) {
-                // EMPTY
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                // EMPTY
-            }
-        });
     }
     
 }

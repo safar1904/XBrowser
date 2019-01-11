@@ -1,5 +1,4 @@
-<view
-    class="android.support.design.widget.CoordinatorLayout"
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -7,16 +6,33 @@
     android:clipToPadding="false"
     android:clipChildren="false">
     
-    <view
-        class="com.xstudio.xbrowser.webkit.WebkitToolbar"
-        android:id="@+id/main_toolbar"
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"/>
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:layout_behavior="com.xstudio.xbrowser.view.WebkitAppBarBehavior">
     
-    <com.xstudio.xbrowser.webkit.WebkitView
-        android:id="@+id/main_webview"
+        <com.xstudio.xbrowser.view.WebkitToolbar
+            android:id="@+id/main_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:layout_scrollFlags="scroll|snap|enterAlways"/>
+    
+    </android.support.design.widget.AppBarLayout>
+    
+    <com.xstudio.xbrowser.view.WebkitNestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
     
-</view>
+        <com.xstudio.xbrowser.view.WebkitView
+            android:id="@+id/main_webview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        
+    </com.xstudio.xbrowser.view.WebkitNestedScrollView>
+    
+</android.support.design.widget.CoordinatorLayout>

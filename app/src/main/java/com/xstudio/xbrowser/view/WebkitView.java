@@ -1,4 +1,4 @@
-package com.xstudio.xbrowser.webkit;
+package com.xstudio.xbrowser.view;
 
 import android.util.AttributeSet;
 import android.graphics.Bitmap;
@@ -26,14 +26,10 @@ public class WebkitView extends WebView {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-            startTouchX = event.getRawX();
-            startTouchY = event.getRawY();
-            startTouchTime = event.getEventTime();
-        } else if (event.getActionMasked() == MotionEvent.ACTION_MOVE) {
-            handleTouchMove(startTouchX, startTouchY, event.getRawX(), event.getRawY());
-        }
-        
+        return true;
+    }
+    
+    public boolean touchMe(MotionEvent event) {
         return super.onTouchEvent(event);
     }
     

@@ -1,4 +1,4 @@
-package com.xstudio.xbrowser.view;
+package com.xstudio.xbrowser.widget;
 
 import android.widget.Adapter;
 import android.widget.AdapterView;

@@ -6,11 +6,15 @@ import com.xstudio.xbrowser.R;
 import com.xstudio.xbrowser.ThisApplication;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import com.xstudio.xbrowser.webkit.*;
-import android.webkit.*;
 import com.xstudio.xbrowser.view.*;
+import android.webkit.*;
+import com.xstudio.xbrowser.widget.*;
 import android.widget.*;
 import com.xstudio.xbrowser.util.*;
+import android.support.design.widget.*;
+import android.content.*;
+import android.speech.*;
+import java.util.*;
 
 public class MainActivity extends AppCompatActivity {
     
@@ -35,6 +39,19 @@ public class MainActivity extends AppCompatActivity {
             public void requestUrl(String url) {
                 webView.loadUrl(url);
             }
+        });
+        
+        toolbar.setSpeechReconitionCallback(new WebkitToolbar.SpeechRecognitionCallback() {
+
+            @Override
+            public void request(TextView output) {
+                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+                startActivityForResult(intent, 1);
+            }
+                
         });
         
     }

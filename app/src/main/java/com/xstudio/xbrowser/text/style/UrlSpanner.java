@@ -1,4 +1,4 @@
-package com.xstudio.xbrowser.webkit;
+package com.xstudio.xbrowser.text.style;
 
 import android.graphics.Color;
 import android.text.style.ForegroundColorSpan;
@@ -7,24 +7,23 @@ import android.text.SpannableString;
 import android.text.style.StrikethroughSpan;
 import com.xstudio.xbrowser.text.TextSpanner;
 import android.net.Uri;
-import com.xstudio.xbrowser.util.*;
 
 public class UrlSpanner implements TextSpanner {
 
     public static enum UrlType { HTTPS_RISK, ONLINE, OFFLINE }
-    
+
     private final UrlType urlType;
     private final int httpsOkColor;
     private final int httpsRiskColor;
     private final int otherColor;
-    
+
     public UrlSpanner(UrlType type) {
         urlType = type;
         httpsOkColor = Color.parseColor("#23AC14");
         httpsRiskColor = Color.parseColor("#DB1524");
         otherColor = Color.parseColor("#B5B5B5");
     }
-    
+
     @Override
     public Spannable span(final String wholeText) {
         final Spannable result = new SpannableString(wholeText);
@@ -60,7 +59,6 @@ public class UrlSpanner implements TextSpanner {
             result.setSpan(getOtherColorSpan(), 0, (uri.getScheme() + schemeDelim).length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
 
-        Logger.debug("", "Spanned");
         return result;
     }
 
@@ -75,5 +73,5 @@ public class UrlSpanner implements TextSpanner {
     private ForegroundColorSpan getHttpsRiskColorSpan() {
         return new ForegroundColorSpan(httpsRiskColor);
     }
-    
+
 }
