@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <item android:id="@+id/history"
+        android:title="History"
+        android:showAsAction="ifRoom"/>
+    <item android:id="@+id/bookmarks"
+        android:title="Bookmarks"/>
+    <item android:id="@+id/downloads"
+        android:title="Downloads"/>
+    <item android:id="@+id/tools"
+        android:title="Tools"/>
+    <item android:id="@+id/plugins"
+        android:title="Plugins"/>
+    <item android:id="@+id/open_as_desktop_site"
+        android:title="Desktop Site"
+        android:checkable="true"
+        android:checked="true"/>
+    <item android:id="@+id/save_as"
+        android:title="Save As"/>
+    <item android:id="@+id/find"
+        android:title="Find In Page"/>
+    <item android:id="@+id/profile"
+        android:title="Profile"/>
+    <item android:id="@+id/settings"
+        android:title="Settings"/>
+    <item android:id="@+id/help"
+        android:title="Help &amp; Support"/>
+    
+</menu>

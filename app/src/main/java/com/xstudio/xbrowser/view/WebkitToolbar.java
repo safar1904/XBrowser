@@ -49,6 +49,8 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
     private SpeechRecognitionCallback speechRecogntionCallback;
     private OnRequestUrlListener onRequestUrlListener;
 
+    
+    
     public WebkitToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
         setElevation(dpToPx(3.5F));
@@ -168,6 +170,10 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
     
     public EditText getUrlInput() {
         return urlInputBox.urlInput;
+    }
+    
+    public AppCompatImageButton getMoreButton() {
+        return moreButton;
     }
     
     public AdapterView<? extends Adapter> getSuggestionAdapterView() {
