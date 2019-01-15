@@ -4,10 +4,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import com.xstudio.xbrowser.R;
 import com.xstudio.xbrowser.ThisApplication;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import com.xstudio.xbrowser.view.*;
-import android.webkit.*;
 import com.xstudio.xbrowser.widget.*;
 import com.xstudio.xbrowser.util.*;
 import android.content.*;
@@ -18,13 +14,20 @@ import android.support.v7.widget.*;
 import android.view.*;
 import android.graphics.*;
 import android.support.design.widget.*;
+import android.view.inputmethod.*;
+import android.webkit.WebView;
+import com.xstudio.xbrowser.view.*;
 
 public class MainActivity extends AppCompatActivity {
     
     WebkitToolbar toolbar;
-    WebkitView webView;
+    WebView webView;
     AppMenu menu;
     boolean show;
+    
+    CoordinatorLayout coordinatorLayout;
+    
+    public static final int URL_INPUT_SPEECH_REQUEST = 0x1;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,15 +35,16 @@ public class MainActivity extends AppCompatActivity {
         ThisApplication.getInstance().setMainActivity(this);
         setContentView(R.layout.main);
         
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.main);
+        
         toolbar = (WebkitToolbar) findViewById(R.id.toolbar);
         InputSuggestionAdapter suggestionAdapter = new InputSuggestionAdapter(this, R.layout.url_input_suggestion_item, toolbar.getUrlInput(), toolbar.getSuggestionAdapterView());
         suggestionAdapter.add(new TitleAndSubtitleHolder("Hello World", "http://www.google.com", "http://www.google.com"));
         toolbar.setSuggestionAdapter(suggestionAdapter);
         
-        webView = (WebkitView) findViewById(R.id.main_webview);
-        webView.setToolbar(toolbar);
+        webView = (WebView) findViewById(R.id.main_webview);
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.loadUrl("file:///sdcard/index.html");
+        webView.loadUrl("http://www.google.com");
         
         toolbar.setOnRequestUrlListener(new WebkitToolbar.OnRequestUrlListener() {
             @Override
@@ -57,12 +61,10 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
                 intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, URL_INPUT_SPEECH_REQUEST);
             }
                 
         });
-        
-        
         
         View v = getLayoutInflater().inflate(R.layout.main_menu_navbar, null, false);
         
@@ -85,6 +87,26 @@ public class MainActivity extends AppCompatActivity {
             Logger.error("", str.toString());
         }
         
+        
+        
     }
-    
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case URL_INPUT_SPEECH_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    List<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    if (results.size() > 0) {
+                        String result = results.get(0);
+                        toolbar.getUrlInput().setText(result);
+                        toolbar.getUrlInput().setSelection(result.length());
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
 }

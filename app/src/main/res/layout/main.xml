@@ -9,8 +9,7 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:layout_behavior="com.xstudio.xbrowser.view.WebkitAppBarBehavior">
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
     
         <com.xstudio.xbrowser.view.WebkitToolbar
             android:id="@+id/toolbar"
@@ -22,17 +21,16 @@
     
     </android.support.design.widget.AppBarLayout>
     
-    <com.xstudio.xbrowser.view.WebkitNestedScrollView
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    
+    <com.xstudio.xbrowser.webkit.WebkitView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:id="@+id/main_webview"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
     
-        <com.xstudio.xbrowser.view.WebkitView
-            android:id="@+id/main_webview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        
-    </com.xstudio.xbrowser.view.WebkitNestedScrollView>
+    </FrameLayout>
     
 </android.support.design.widget.CoordinatorLayout>

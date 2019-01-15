@@ -7,6 +7,10 @@ import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.webkit.WebView;
 import android.webkit.*;
+import android.view.*;
+import com.xstudio.xbrowser.util.*;
+import android.support.design.widget.*;
+import com.xstudio.xbrowser.*;
 
 public class WebkitView extends WebView {
     
@@ -17,16 +21,28 @@ public class WebkitView extends WebView {
     long startTouchTime;
     ViewConfiguration viewConfig;
     
+    CoordinatorLayout root;
+    
     public WebkitView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setWebViewClient(new XWebViewClient());
         setWebChromeClient(new XWebChromeClient());
         viewConfig = ViewConfiguration.get(context);
+        
+        
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        return true;
+    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+        super.onScrollChanged(l, t, oldl, oldt);
+        int dt = t - oldt;
+        if (root != null) {
+            root.onNestedScroll(this, 0, dt, 0, 0);
+        }
+    }
+
+    public void setRoot(CoordinatorLayout root) {
+        this.root = root;
     }
     
     public boolean touchMe(MotionEvent event) {
@@ -61,26 +77,7 @@ public class WebkitView extends WebView {
         }
     }
     
-    private void handleTouchMove(final float startX, final float startY, final float endX, final float endY) {
-        final float diffX = startX - endX;
-        final float diffY = startY - endY;
-        final float absDiffX = Math.abs(diffX);
-        final float absDiffY = Math.abs(diffY);
-        
-        if (absDiffX > absDiffY && absDiffX >= viewConfig.getScaledTouchSlop()) {
-            if (diffX < 0) {
-                
-            } else if (diffX > 0) {
-                
-            }
-        } else if (absDiffY > absDiffX && absDiffY >= viewConfig.getScaledTouchSlop()) {
-            if (diffY < 0) {
-                
-            } else if (diffY > 0) {
-                
-            }
-        }
-    }
+    
     
     public static interface Toolbar {
         

@@ -48,8 +48,6 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
     private ArrayAdapter<TitleAndSubtitleHolder> suggestionAdapter;
     private SpeechRecognitionCallback speechRecogntionCallback;
     private OnRequestUrlListener onRequestUrlListener;
-
-    
     
     public WebkitToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -210,6 +208,14 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
         }
     }
     
+    public void showSoftKeyboard(boolean show) {
+        if (show) {
+            inputMethodManager.showSoftInput(urlInputBox.urlInput, InputMethodManager.SHOW_IMPLICIT);
+        } else {
+            inputMethodManager.hideSoftInputFromInputMethod(getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
+        }
+    }
+    
     
     private final OnItemClickListener onItemClickListener = new OnItemClickListener() {
         @Override
@@ -222,14 +228,7 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
             }
         }
     };
-    
-    private void showSoftKeyboard(boolean show) {
-        if (show) {
-            inputMethodManager.showSoftInput(urlInputBox.urlInput, InputMethodManager.SHOW_IMPLICIT);
-        } else {
-            inputMethodManager.hideSoftInputFromWindow(getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        }
-    }
+   
     
     public static interface SpeechRecognitionCallback {
         void request(TextView output);
@@ -244,7 +243,7 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
         private NiceEditText urlInput;
         private CircleImageView faviconButton;
         private AppCompatImageButton actionButton;
-        private String backupUrl;
+        private CharSequence backupUrl;
 
         private UrlInputBox(Context context) {
             super(context);
@@ -316,7 +315,7 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
                     faviconButton.setVisibility(goneIfFocused);
                     actionButton.setVisibility(visibleIfFocused);
                     if (hasFocus) {
-                        backupUrl = urlInput.getText().toString();
+                        backupUrl = urlInput.getText();
                     } else {
                         urlInput.setText(backupUrl);
                     }
@@ -360,6 +359,7 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
                     return false;
                 }
             });
+            
         }
 
         private void updateActionButtonImage() {

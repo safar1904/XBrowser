@@ -19,10 +19,10 @@ import android.database.*;
 import android.support.v7.widget.*;
 import android.graphics.*;
 import com.xstudio.xbrowser.util.*;
-import com.xstudio.xbrowser.*;
 import android.os.*;
 
 import static com.xstudio.xbrowser.util.Measurements.*;
+import android.content.res.*;
 
 public class AppMenu extends ListView implements ListAdapter, SubMenu {
 
@@ -35,7 +35,11 @@ public class AppMenu extends ListView implements ListAdapter, SubMenu {
     private int heightDimenRes;
     private boolean showing;
     private WindowManager.LayoutParams windowManagerParams;
-    private int[] drawingLocation = new int[2];
+    private int preferedMargin;
+    
+    private final int[] drawingLocation = new int[2];
+    private final int[] screenLocation = new int[2];
+    private final Rect visibleFrameRect = new Rect();
     
     private boolean asSubmenu;
     private String headerTitle;
@@ -48,11 +52,13 @@ public class AppMenu extends ListView implements ListAdapter, SubMenu {
         itemLayoutRes = itemRes;
         widthDimenRes = widthRes;
         heightDimenRes = heightRes;
+        preferedMargin = dpToPx(30F);
         windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         items = new ArrayList<>();
         layoutInflater = LayoutInflater.from(context);
         setAdapter(this);
         setDividerHeight(0);
+        setClipToOutline(true);
         setClipToPadding(false);
         setElevation(Measurements.dpToPx(5F));
         setFocusable(true);
@@ -74,6 +80,12 @@ public class AppMenu extends ListView implements ListAdapter, SubMenu {
                 break;
         }
         return super.onTouchEvent(ev);
+    }
+
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        close();
     }
     
     @Override
@@ -430,14 +442,19 @@ public class AppMenu extends ListView implements ListAdapter, SubMenu {
         return false;
     }
     
+    public void updatePositionAndSize(View anchor) {
+        if (showing) {
+            WindowManager.LayoutParams params = (WindowManager.LayoutParams) getLayoutParams();
+            computePositionAndSize(anchor, params);
+            windowManager.updateViewLayout(this, params);
+        }
+    }
+    
     private void addToWindow(View anchor) {
         try {
             WindowManager.LayoutParams params = getWindowManagerParams();
+            computePositionAndSize(anchor, params);
             params.token = anchor.getWindowToken();
-            params.width = computeWidth();
-            params.height = computeHeight();
-            params.x = computeX(anchor);
-            params.y = computeY(anchor);
             windowManager.addView(this, params);
             showing = true;
         } catch (Exception e) {
@@ -455,16 +472,6 @@ public class AppMenu extends ListView implements ListAdapter, SubMenu {
         showing = false;
     }
     
-    private int computeX(View anchor) {
-        anchor.getLocationInWindow(drawingLocation);
-        return drawingLocation[0];
-    }
-    
-    private int computeY(View anchor) {
-        anchor.getLocationInWindow(drawingLocation);
-        return drawingLocation[1];
-    }
-    
     private int computeWidth() {
         int itemWidth = getContext().getResources().getDimensionPixelSize(widthDimenRes);
         return itemWidth;
@@ -473,14 +480,15 @@ public class AppMenu extends ListView implements ListAdapter, SubMenu {
     private int computeHeight() {
         int itemHeight = getContext().getResources().getDimensionPixelSize(heightDimenRes);
         int itemCount = getCount() + getHeaderViewsCount();
-        return 300;// itemCount * itemHeight;
+        return itemCount * itemHeight;
     }
     
     private WindowManager.LayoutParams getWindowManagerParams() {
         if (windowManagerParams == null) {
             windowManagerParams = new WindowManager.LayoutParams();
-            windowManagerParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG;
-            windowManagerParams.gravity = Gravity.TOP | Gravity.LEFT;
+            windowManagerParams.type = asSubmenu ? WindowManager.LayoutParams.TYPE_APPLICATION_PANEL :
+                WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL;
+            windowManagerParams.gravity = Gravity.TOP | Gravity.LEFT | Gravity.CLIP_VERTICAL;
             windowManagerParams.format = PixelFormat.TRANSLUCENT;
             windowManagerParams.flags &= ~(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
                 WindowManager.LayoutParams.FLAG_IGNORE_CHEEK_PRESSES |
@@ -495,6 +503,32 @@ public class AppMenu extends ListView implements ListAdapter, SubMenu {
             windowManagerParams.packageName = getContext().getPackageName();
         }
         return windowManagerParams;
+    }
+    
+    private void computePositionAndSize(View anchor, WindowManager.LayoutParams params) {
+        final View root = anchor.getRootView();
+        root.getWindowVisibleDisplayFrame(visibleFrameRect);
+        
+        params.width = Math.min(computeWidth(), visibleFrameRect.right - preferedMargin * 2);
+        params.height = Math.min(computeHeight(), visibleFrameRect.bottom - preferedMargin * 2);
+        
+        anchor.getLocationOnScreen(screenLocation);
+        if (screenLocation[1] + params.height > visibleFrameRect.bottom ||
+              params.x - root.getWidth() > 0 ) {
+            int scrollX = anchor.getScrollX();
+            int scrollY = anchor.getScrollY();
+            visibleFrameRect.left = scrollX;
+            visibleFrameRect.top = scrollY;
+            visibleFrameRect.right = scrollX + params.width;
+            visibleFrameRect.bottom = scrollY + params.height;
+            anchor.requestRectangleOnScreen(visibleFrameRect);
+        }
+        
+        anchor.getLocationInWindow(drawingLocation);
+        params.x = (visibleFrameRect.right - drawingLocation[0]) > params.width ? drawingLocation[0] :
+            Math.max(preferedMargin, drawingLocation[0] - params.width + anchor.getWidth());
+        params.y = (visibleFrameRect.bottom - drawingLocation[1]) > params.height ? drawingLocation[1] :
+            Math.max(preferedMargin, drawingLocation[1] - params.height);
     }
     
     private View createSubHeaderView(String title, Drawable icon) {

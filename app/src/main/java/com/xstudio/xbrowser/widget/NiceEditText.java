@@ -39,10 +39,11 @@ public class NiceEditText extends AppCompatEditText {
 
     @Override
     public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+        boolean ret = super.onKeyPreIme(keyCode, event);
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
             clearFocus();
         }
-        return super.onKeyPreIme(keyCode, event);
+        return ret;
     }
     
     public void setSpanStrategy(SpanStrategy strategy) {
