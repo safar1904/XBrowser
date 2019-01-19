@@ -2,33 +2,24 @@ package com.xstudio.xbrowser.webkit;
 
 import android.util.AttributeSet;
 import android.content.Context;
-import android.webkit.WebChromeClient;
-import android.webkit.WebViewClient;
+import com.github.ksoichiro.android.observablescrollview.ObservableWebView;
+import android.graphics.*;
 
-public class WebkitView extends NestedScrollWebView {
+public class WebkitView extends ObservableWebView {
     
     public WebkitView(Context context) {
         super(context);
-        init();
     }
     
     public WebkitView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
     }
     
-    private void init() {
-        setWebViewClient(new ViewClient());
-        setWebChromeClient(new ChromeClient());
-    }
-    
-    
-    class ViewClient extends WebViewClient {
-        
-    }
-    
-    class ChromeClient extends WebChromeClient {
-        
+    public static interface Toolbar {
+        void setUrl(String url);
+        void setTitle(String title);
+        void setIcon(Bitmap icon);
+        void setProgress(int progress);
     }
     
 }

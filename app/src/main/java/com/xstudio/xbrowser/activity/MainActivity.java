@@ -16,16 +16,21 @@ import android.graphics.*;
 import android.support.design.widget.*;
 import android.view.inputmethod.*;
 import android.webkit.WebView;
-import com.xstudio.xbrowser.view.*;
+import com.xstudio.xbrowser.webkit.WebkitToolbar;
+import com.xstudio.xbrowser.view.AppMenu;
+import com.xstudio.xbrowser.webkit.WebkitView;
+import com.github.ksoichiro.android.observablescrollview.*;
+import android.support.v4.view.*;
+import com.xstudio.xbrowser.webkit.*;
+import com.xstudio.xbrowser.webkit.WebkitLayout;
 
 public class MainActivity extends AppCompatActivity {
     
     WebkitToolbar toolbar;
     WebView webView;
     AppMenu menu;
-    boolean show;
-    
-    CoordinatorLayout coordinatorLayout;
+    ViewGroup rootView;
+    WebkitLayout webkitLayout;
     
     public static final int URL_INPUT_SPEECH_REQUEST = 0x1;
     
@@ -33,18 +38,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ThisApplication.getInstance().setMainActivity(this);
-        setContentView(R.layout.main);
+        setContentView(R.layout.test);
         
-        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.main);
+        rootView = (ViewGroup) findViewById(R.id.main_rootlayout);
         
-        toolbar = (WebkitToolbar) findViewById(R.id.toolbar);
+        toolbar = new WebkitToolbar(this, null);
         InputSuggestionAdapter suggestionAdapter = new InputSuggestionAdapter(this, R.layout.url_input_suggestion_item, toolbar.getUrlInput(), toolbar.getSuggestionAdapterView());
         suggestionAdapter.add(new TitleAndSubtitleHolder("Hello World", "http://www.google.com", "http://www.google.com"));
         toolbar.setSuggestionAdapter(suggestionAdapter);
         
-        webView = (WebView) findViewById(R.id.main_webview);
+        webView = new ObservableWebView(this);
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.loadUrl("http://www.google.com");
+        webView.loadUrl("file:///sdcard/index.html");
         
         toolbar.setOnRequestUrlListener(new WebkitToolbar.OnRequestUrlListener() {
             @Override
@@ -65,6 +70,11 @@ public class MainActivity extends AppCompatActivity {
             }
                 
         });
+        
+        webkitLayout = (WebkitLayout) findViewById(R.id.webkit_layout);
+        webkitLayout.setToolbar(toolbar);
+        webkitLayout.setCollapsingOffset(Measurements.dpToPx(57F));
+        webkitLayout.setContentView(webView);
         
         View v = getLayoutInflater().inflate(R.layout.main_menu_navbar, null, false);
         
@@ -87,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
             Logger.error("", str.toString());
         }
         
-        
+     
         
     }
 
