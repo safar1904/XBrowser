@@ -72,9 +72,9 @@ public class MainActivity extends AppCompatActivity {
         });
         
         webkitLayout = (WebkitLayout) findViewById(R.id.webkit_layout);
+        webkitLayout.setContentOffset(Measurements.dpToPx(57));
         webkitLayout.setToolbar(toolbar);
-        webkitLayout.setCollapsingOffset(Measurements.dpToPx(57F));
-        webkitLayout.setContentView(webView);
+        webkitLayout.setContent(webView);
         
         View v = getLayoutInflater().inflate(R.layout.main_menu_navbar, null, false);
         

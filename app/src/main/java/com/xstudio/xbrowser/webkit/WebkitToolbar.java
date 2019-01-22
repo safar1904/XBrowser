@@ -19,6 +19,7 @@ import android.text.InputType;
 import android.view.KeyEvent;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.view.MotionEvent;
 import com.xstudio.xbrowser.widget.NiceEditText;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ProgressBar;
@@ -29,6 +30,7 @@ import android.text.TextWatcher;
 import com.xstudio.xbrowser.util.TitleAndSubtitleHolder;
 import com.xstudio.xbrowser.text.style.UrlSpanner;
 import android.view.View;
+import android.view.ViewGroup;
 import com.xstudio.xbrowser.webkit.WebkitView;
 
 import static android.widget.RelativeLayout.LayoutParams.*;
@@ -42,6 +44,7 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
     private final UrlInputBox urlInputBox;
     private final ListView suggestionListView;
     private final ProgressBar progressBar;
+    private boolean suggestionFullScreen = true;
 
     private ArrayAdapter<TitleAndSubtitleHolder> suggestionAdapter;
     private SpeechRecognitionCallback speechRecogntionCallback;
@@ -110,10 +113,24 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
         suggestionListView = new ListView(getContext());
         suggestionListView.setOnItemClickListener(onItemClickListener);
         suggestionListView.setDividerHeight(0);
-        LayoutParams params5 = new LayoutParams(MATCH_PARENT, MATCH_PARENT);
+        suggestionListView.setVisibility(GONE);
+        LayoutParams params5 = new LayoutParams(MATCH_PARENT, WRAP_CONTENT);
         params5.addRule(BELOW, innerLayout.getId());
         addView(suggestionListView, params5);
-        suggestionListView.setVisibility(GONE);
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+        if (suggestionFullScreen && suggestionListView.getVisibility() == VISIBLE &&
+                getParent() instanceof View) {
+            setBottom(((View) getParent()).getHeight());
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return true;
     }
 
     @Override
@@ -186,6 +203,25 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
         suggestionListView.setAdapter(adapter);
         suggestionAdapter = adapter;
     }
+    
+    public void showSuggestion(boolean show) {
+        if (show) {
+            suggestionListView.setVisibility(VISIBLE);
+        } else {
+            suggestionListView.setVisibility(GONE);
+        }
+        if (getParent() instanceof ViewGroup) {
+            ViewGroup viewParent = (ViewGroup) getParent();
+            ViewGroup.LayoutParams p = getLayoutParams();
+            if (show && suggestionFullScreen) {
+                p.height = MATCH_PARENT;
+                viewParent.updateViewLayout(this, p);
+            } else if (!show || (!suggestionFullScreen && p.height != WRAP_CONTENT)) {
+                p.height = WRAP_CONTENT;
+                viewParent.updateViewLayout(this, p);
+            }
+        }
+    }
 
     private void expandUrlInputBox(boolean expand) {
         if (expand) {
@@ -201,7 +237,7 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
         if (show) {
             inputMethodManager.showSoftInput(urlInputBox.urlInput, InputMethodManager.SHOW_IMPLICIT);
         } else {
-            inputMethodManager.hideSoftInputFromInputMethod(getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
+            inputMethodManager.hideSoftInputFromWindow(getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
         }
     }
 
@@ -236,8 +272,6 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
 
         private UrlInputBox(Context context) {
             super(context);
-            setFocusable(true);
-            setFocusableInTouchMode(true);
             setPadding(dpToPx(3F), 0, dpToPx(3F), 0);
             setElevation(dpToPx(2F));
             setClipToPadding(false);
@@ -279,6 +313,7 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
 
         private void initUrlInput() {
             urlInput = new NiceEditText(getContext());
+            urlInput.setHint("Search or enter address");
             urlInput.setBackgroundResource(android.R.color.transparent);
             urlInput.setTextAppearance(getContext(), android.R.style.TextAppearance);
             urlInput.setGravity(Gravity.CENTER_VERTICAL);
@@ -308,7 +343,8 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
                         } else {
                             urlInput.setText(backupUrl);
                         }
-                        WebkitToolbar.this.suggestionListView.setVisibility(visibleIfFocused);
+                        WebkitToolbar.this.showSuggestion(hasFocus);
+                        WebkitToolbar.this.showSoftKeyboard(hasFocus);
                     }
                 });
 

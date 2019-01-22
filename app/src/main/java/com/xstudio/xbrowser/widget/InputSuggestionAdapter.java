@@ -72,7 +72,7 @@ public class InputSuggestionAdapter extends ArrayAdapter<TitleAndSubtitleHolder>
         if (view.getId() == android.R.id.button1) {
             TitleAndSubtitleHolder item = getItem(viewHolder.position);
             String text = item.toString();
-            output.setTextKeepState(text);
+            output.setText(text);
             output.setSelection(text.length());
         } else if (adapterView.getOnItemClickListener() != null) {
             adapterView.getOnItemClickListener().onItemClick(adapterView, view, viewHolder.position, getItemId(viewHolder.position));
