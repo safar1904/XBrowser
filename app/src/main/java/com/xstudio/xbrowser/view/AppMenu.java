@@ -1,28 +1,37 @@
 package com.xstudio.xbrowser.view;
 
-import android.widget.ArrayAdapter;
+import android.view.ActionProvider;
+import android.support.v7.widget.AppCompatCheckBox;
+import android.support.v7.widget.AppCompatImageView;
+import android.support.v7.widget.AppCompatTextView;
+import java.util.ArrayList;
 import android.content.ComponentName;
+import android.content.res.Configuration;
 import android.content.Context;
+import android.view.ContextMenu;
+import android.database.DataSetObserver;
+import android.graphics.drawable.Drawable;
+import android.view.Gravity;
 import android.content.Intent;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.widget.LinearLayout;
+import java.util.List;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.os.Parcelable;
+import android.graphics.PixelFormat;
+import android.graphics.Rect;
 import android.view.SubMenu;
-import android.view.MenuItem.*;
-import android.view.*;
-import android.view.ContextMenu.*;
-import android.graphics.drawable.*;
-import java.util.*;
-import android.widget.*;
-import android.database.*;
-import android.support.v7.widget.*;
-import android.graphics.*;
-import com.xstudio.xbrowser.util.*;
-import android.os.*;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import static com.xstudio.xbrowser.util.Measurements.*;
-import android.content.res.*;
+
 
 public class AppMenu extends ListView implements ListAdapter, SubMenu {
 
@@ -60,7 +69,7 @@ public class AppMenu extends ListView implements ListAdapter, SubMenu {
         setDividerHeight(0);
         setClipToOutline(true);
         setClipToPadding(false);
-        setElevation(Measurements.dpToPx(5F));
+        setElevation(dpToPx(5F));
         setFocusable(true);
         setFocusableInTouchMode(true);
         setBackgroundResource(android.R.color.background_light);
@@ -70,6 +79,11 @@ public class AppMenu extends ListView implements ListAdapter, SubMenu {
         this(context, itemResId, widthRes, heightRes);
         asSubmenu = true;
         subMenuItem = item;
+    }
+
+    @Override
+    public void onRestoreInstanceState(Parcelable state) {
+        // EMPTY
     }
     
     @Override
@@ -81,13 +95,28 @@ public class AppMenu extends ListView implements ListAdapter, SubMenu {
         }
         return super.onTouchEvent(ev);
     }
-
+    
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        switch (event.getKeyCode()) {
+            case KeyEvent.KEYCODE_BACK:
+                if (event.getAction() == KeyEvent.ACTION_UP) {
+                    close();
+                    return true;
+                }
+                break;
+            default:
+                break;
+        }
+        return super.dispatchKeyEvent(event);
+    }
+    
     @Override
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         close();
     }
-    
+
     @Override
     public void registerDataSetObserver(DataSetObserver observer) {
         if (observers == null) {
@@ -122,9 +151,9 @@ public class AppMenu extends ListView implements ListAdapter, SubMenu {
         if (convertView == null) {
             View view = layoutInflater.inflate(itemLayoutRes, container, false);
             ViewHolder tag = new ViewHolder();
-            tag.title = (TextView) view.findViewById(android.R.id.title);
-            tag.icon = (ImageView) view.findViewById(android.R.id.icon);
-            tag.checkBox = (CheckBox) view.findViewById(android.R.id.checkbox);
+            tag.title = (AppCompatTextView) view.findViewById(android.R.id.title);
+            tag.icon = (AppCompatImageView) view.findViewById(android.R.id.icon);
+            tag.checkBox = (AppCompatCheckBox) view.findViewById(android.R.id.checkbox);
             if (tag.title == null || tag.icon == null || tag.checkBox == null) {
                 throw new RuntimeException("Failed inflating layout : cannot find id");
             }
@@ -457,18 +486,17 @@ public class AppMenu extends ListView implements ListAdapter, SubMenu {
             params.token = anchor.getWindowToken();
             windowManager.addView(this, params);
             showing = true;
-        } catch (Exception e) {
-            StringBuilder str = new StringBuilder();
-            for (StackTraceElement trace : e.getStackTrace()) {
-                str.append("Class: " + trace.getClassName() + " Method: " + trace.getMethodName() + " Line: " + trace.getLineNumber() + "\n");
-            }
-            str.append(e.getMessage());
-            Logger.error("", str.toString());
+        } catch (RuntimeException e) {
+            e.printStackTrace();
         }
     }
     
     private void removeFromWindow() {
-        windowManager.removeViewImmediate(this);
+        try {
+            windowManager.removeViewImmediate(this);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
         showing = false;
     }
     
@@ -488,8 +516,9 @@ public class AppMenu extends ListView implements ListAdapter, SubMenu {
             windowManagerParams = new WindowManager.LayoutParams();
             windowManagerParams.type = asSubmenu ? WindowManager.LayoutParams.TYPE_APPLICATION_PANEL :
                 WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL;
-            windowManagerParams.gravity = Gravity.TOP | Gravity.LEFT | Gravity.CLIP_VERTICAL;
+            windowManagerParams.gravity = Gravity.TOP | Gravity.LEFT;
             windowManagerParams.format = PixelFormat.TRANSLUCENT;
+            windowManagerParams.windowAnimations = android.support.design.R.style.Animation_AppCompat_Dialog;
             windowManagerParams.flags &= ~(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
                 WindowManager.LayoutParams.FLAG_IGNORE_CHEEK_PRESSES |
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE |
@@ -535,8 +564,8 @@ public class AppMenu extends ListView implements ListAdapter, SubMenu {
         LinearLayout view = new LinearLayout(getContext());
         view.setOrientation(LinearLayout.HORIZONTAL);
         if (icon != null) {
-            ImageView iconView = new ImageView(getContext());
-            iconView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            AppCompatImageView iconView = new AppCompatImageView(getContext());
+            iconView.setScaleType(AppCompatImageView.ScaleType.FIT_CENTER);
             iconView.setImageDrawable(icon);
             view.addView(iconView);
         }
@@ -564,9 +593,9 @@ public class AppMenu extends ListView implements ListAdapter, SubMenu {
     }
     
     private class ViewHolder {
-        TextView title;
-        ImageView icon;
-        CheckBox checkBox;
+        AppCompatTextView title;
+        AppCompatImageView icon;
+        AppCompatCheckBox checkBox;
     }
     
     class Item implements MenuItem {

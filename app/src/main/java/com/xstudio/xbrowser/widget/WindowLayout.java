@@ -111,26 +111,6 @@ public class WindowLayout extends ViewGroup implements OnScrollChangedListener {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         
-        /* Not Support WRAP_CONTENT
-        
-        int maxWidth = 0;
-        int maxHeight = 0;
-        int childState = 0;
-        
-        final int childCount = getChildCount();
-        for (int i = 0; i < childCount; i++) {
-            final View child = getChildAt(i);
-            if (child.getVisibility() != GONE) {
-                maxWidth = Math.max(maxWidth, child.getMeasuredWidth());
-                maxHeight = Math.max(maxHeight, child.getMeasuredHeight());
-                childState = combineMeasuredStates(childState, child.getMeasuredState());
-            }
-        }
-        
-        setMeasuredDimension(resolveSizeAndState(maxWidth, widthMeasureSpec, childState),
-                resolveSizeAndState(maxHeight, heightMeasureSpec, childState << MEASURED_HEIGHT_STATE_SHIFT));
-        */
-        
         if (mToolbar != null && mToolbar.getVisibility() != GONE) {
             final LayoutParams params = mToolbar.getLayoutParams();
             final int w = makeMeasureSpec(getMeasuredWidth(), EXACTLY);
@@ -170,6 +150,7 @@ public class WindowLayout extends ViewGroup implements OnScrollChangedListener {
     
     public void setContent(View view) {
         if (mContent != null && mContent.getViewTreeObserver().isAlive()) {
+            removeView(mContent);
             mContent.getViewTreeObserver().removeOnScrollChangedListener(this);
         }
         if ((mContent = view) != null) {

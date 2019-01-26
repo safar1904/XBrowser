@@ -3,6 +3,7 @@ package com.xstudio.xbrowser.webkit;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatImageButton;
 import android.widget.ArrayAdapter;
 import android.util.AttributeSet;
@@ -12,7 +13,6 @@ import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.view.Gravity;
 import android.view.inputmethod.InputMethodManager;
 import android.text.InputType;
@@ -183,19 +183,23 @@ public class WebkitToolbar extends RelativeLayout implements View.OnClickListene
         urlInputBox.faviconButton.setOnClickListener(listener);
     }
 
-    public EditText getUrlInput() {
+    public AppCompatEditText getUrlInput() {
         return urlInputBox.urlInput;
     }
 
     public AppCompatImageButton getMoreButton() {
         return moreButton;
     }
+    
+    public AppCompatButton getSelectTabButton() {
+        return selectWindowButton;
+    }
 
     public AdapterView<? extends Adapter> getSuggestionAdapterView() {
         return suggestionListView;
     }
 
-    public void setSpeechReconitionCallback(SpeechRecognitionCallback callback) {
+    public void setSpeechRecognitionCallback(SpeechRecognitionCallback callback) {
         speechRecogntionCallback = callback;
     }
 
